@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>GameBaaz — Smart Gaming Cafe Software</title>
+<meta name="description" content="GameBaaz — gaming cafe management software. PC session auto-lock, canteen billing, sales reports, pending dues tracker. Delhi NCR. First month free."/>
+<meta name="keywords" content="gaming cafe software, PC cafe management, cyber cafe billing software, gaming cafe Delhi, PS5 cafe management"/>
+<meta property="og:title" content="GameBaaz — Apna Cafe, Apna Control"/>
+<meta property="og:description" content="PC sessions, canteen billing, sales reports — sab automatic. Delhi NCR ke gaming cafes ke liye. Pehla mahina free."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=80"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --g:#00e87a;--g2:#00b85f;--g3:rgba(0,232,122,0.09);
+  --bg:#050809;--s1:#0a1015;--s2:#0e1620;--s3:#131d28;
+  --txt:#ddeedd;--muted:#4a6a5a;--muted2:#7a9a8a;
+  --bdr:rgba(0,232,122,0.1);--bdr2:rgba(0,232,122,0.22);
+  --red:#ff4d6d;--gold:#f5c842;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+@media(min-width:901px){
+  body{cursor:none;}
+  #cur,#cur2{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transition:transform .15s;}
+  #cur{width:8px;height:8px;background:var(--g);top:0;left:0;}
+  #cur2{width:30px;height:30px;border:1.5px solid rgba(0,232,122,0.45);top:0;left:0;transition:width .2s,height .2s,left .08s,top .08s;}
+}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,8,9,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);}
+.nav-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--g);text-decoration:none;}
+.nav-logo span{color:var(--txt);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-size:14px;font-weight:500;color:var(--muted2);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--g);}
+.nav-btn{background:var(--g);color:#050809;border:none;padding:9px 20px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap;}
+.nav-btn:hover{background:var(--g2);box-shadow:0 6px 20px rgba(0,232,122,0.25);}
+
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 5% 80px;text-align:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;}
+.hero-bg-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1400&q=80');background-size:cover;background-position:center;opacity:0.45;filter:saturate(0.55);}
+.hero-bg-overlay{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(5,8,9,0.3) 0%,rgba(5,8,9,0.92) 100%);}
+.hero-bg-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(0,232,122,0.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-55%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,232,122,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,122,0.025) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black,transparent);}
+
+.hero-content{position:relative;z-index:1;width:100%;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--g3);border:1px solid var(--bdr2);border-radius:100px;padding:6px 16px 6px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--g);letter-spacing:1px;margin-bottom:28px;}
+.badge-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.hero-h1{font-family:'Syne',sans-serif;font-size:clamp(48px,9vw,108px);font-weight:800;line-height:0.95;letter-spacing:-3px;margin-bottom:24px;}
+.hero-h1 .g{color:var(--g);display:block;text-shadow:0 0 80px rgba(0,232,122,0.25);}
+.hero-sub{font-size:clamp(15px,2.2vw,19px);font-weight:300;color:var(--muted2);max-width:540px;margin:0 auto 36px;line-height:1.7;}
+.hero-sub strong{color:var(--txt);font-weight:500;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-main{background:var(--g);color:#050809;border:none;padding:14px 30px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-main:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,232,122,0.3);}
+.btn-ghost{background:rgba(255,255,255,0.04);color:var(--txt);border:1px solid var(--bdr2);padding:14px 30px;font-family:'Syne',sans-serif;font-size:15px;font-weight:600;border-radius:10px;cursor:pointer;transition:all .25s;text-decoration:none;}
+.btn-ghost:hover{border-color:var(--g);color:var(--g);}
+.hero-stats{display:flex;margin-top:56px;border:1px solid var(--bdr);border-radius:16px;overflow:hidden;background:rgba(10,16,21,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);flex-wrap:wrap;}
+.hstat{padding:18px 32px;text-align:center;border-right:1px solid var(--bdr);flex:1;min-width:120px;}
+.hstat:last-child{border:none;}
+.hstat-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--g);}
+.hstat-l{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+.ticker{background:var(--g);padding:11px 0;overflow:hidden;position:relative;z-index:2;}
+.ticker-tr{display:flex;animation:tick 22s linear infinite;white-space:nowrap;}
+.ticker-tr span{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#050809;letter-spacing:2px;padding:0 28px;}
+.ticker-sep{color:rgba(0,0,0,0.22);}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+section{position:relative;z-index:2;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 5%;}
+.sec-pad{padding:90px 0;}
+.stag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--g);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.stag::before{content:'';width:20px;height:1px;background:var(--g);}
+.sh{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-bottom:14px;}
+.sh span{color:var(--g);}
+.ssub{font-size:15px;color:var(--muted2);font-weight:300;line-height:1.7;max-width:480px;}
+
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;margin-top:48px;}
+.fc{background:var(--s1);padding:32px 28px;transition:background .25s;position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);opacity:0;transition:opacity .3s;}
+.fc:hover{background:var(--s2);}
+.fc:hover::before{opacity:0.4;}
+.fc-ico{font-size:30px;margin-bottom:16px;display:block;}
+.fc-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:12px;}
+.fc-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;letter-spacing:-0.3px;margin-bottom:8px;}
+.fc-desc{font-size:13px;color:var(--muted2);line-height:1.7;font-weight:300;}
+.fc-tag{display:inline-block;margin-top:14px;background:var(--g3);border:1px solid var(--bdr);border-radius:100px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--g);letter-spacing:1px;}
+.fc-soon .fc-tag{background:rgba(245,200,66,0.07);border-color:rgba(245,200,66,0.18);color:var(--gold);}
+.fc-soon{opacity:0.65;}
+
+.gallery-strip{position:relative;overflow:hidden;height:280px;margin:0;}
+.gallery-inner{display:flex;height:100%;animation:slide 30s linear infinite;}
+.gallery-img{flex-shrink:0;width:380px;height:280px;object-fit:cover;filter:brightness(0.45) saturate(0.5);margin-right:4px;}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to right,var(--bg) 0%,transparent 15%,transparent 85%,var(--bg) 100%),linear-gradient(to bottom,rgba(5,8,9,0.3),rgba(5,8,9,0.3));pointer-events:none;}
+.gallery-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;}
+.gallery-text h3{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;color:#fff;}
+.gallery-text p{font-size:13px;color:var(--muted2);font-family:'JetBrains Mono',monospace;letter-spacing:2px;}
+@keyframes slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.bvsa{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bdr);border-radius:18px;overflow:hidden;border:1px solid var(--bdr);margin-top:48px;}
+.bvsa-col{padding:36px 32px;}
+.bvsa-col.bad{background:#0d0709;}
+.bvsa-col.good{background:#070d09;}
+.bvsa-hd{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid;}
+.bad .bvsa-hd{color:var(--red);border-color:rgba(255,77,109,0.12);}
+.good .bvsa-hd{color:var(--g);border-color:var(--bdr);}
+.bvsa-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.03);align-items:flex-start;}
+.bvsa-row:last-child{border:none;}
+.bvdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.bad .bvdot{background:var(--red);}
+.good .bvdot{background:var(--g);}
+.bvt{font-size:14px;font-weight:500;color:var(--txt);}
+.bvs{font-size:12px;color:var(--muted);margin-top:2px;font-weight:300;}
+
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;position:relative;}
+.how-line{position:absolute;top:39px;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,122,0.2),rgba(0,232,122,0.2),transparent);}
+.how-step{text-align:center;padding:0 12px;}
+.how-circ{width:78px;height:78px;margin:0 auto 20px;border:1px solid var(--bdr2);border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--s1);position:relative;z-index:1;}
+.how-n{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--g);}
+.how-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
+.how-desc{font-size:12px;color:var(--muted2);line-height:1.7;font-weight:300;}
+
+.offer-box{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--bdr2);border-radius:22px;padding:52px 56px;display:flex;align-items:center;justify-content:space-between;gap:40px;position:relative;overflow:hidden;}
+.offer-glow{position:absolute;width:350px;height:350px;background:radial-gradient(circle,rgba(0,232,122,0.05),transparent);right:-80px;top:-80px;pointer-events:none;}
+.offer-h{font-family:'Syne',sans-serif;font-size:clamp(32px,4vw,44px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;}
+.offer-h span{color:var(--g);}
+.offer-p{font-size:15px;color:var(--muted2);margin-top:12px;font-weight:300;line-height:1.7;max-width:380px;}
+.offer-list{display:flex;flex-direction:column;gap:10px;flex-shrink:0;}
+.obadge{display:flex;align-items:center;gap:12px;background:rgba(0,232,122,0.05);border:1px solid var(--bdr);border-radius:10px;padding:11px 18px;white-space:nowrap;}
+.obadge-i{font-size:17px;}
+.obadge-t{font-size:13px;font-weight:500;}
+
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px;}
+.pc{background:var(--s1);border:1px solid var(--bdr);border-radius:18px;padding:32px 28px;position:relative;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;flex-direction:column;}
+.pc:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.3);}
+.pc.hot{border-color:var(--g);background:var(--s2);}
+.pc.hot:hover{box-shadow:0 16px 48px rgba(0,232,122,0.12);}
+.pc-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g);color:#050809;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;letter-spacing:0.5px;}
+.pc-plan{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--g);letter-spacing:2px;margin-bottom:18px;}
+.pc-tag{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:300;}
+.pc-amt{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:16px;}
+.pc-mo{display:flex;align-items:center;gap:8px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--bdr);}
+.pc-mo-a{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--g);}
+.pc-mo-l{font-size:11px;color:var(--muted);font-weight:300;line-height:1.5;}
+.pf{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:13px;font-weight:400;}
+.pf .y{color:var(--g);font-size:11px;flex-shrink:0;}
+.pf .n{color:var(--muted);font-size:11px;flex-shrink:0;}
+.pf.dim{color:var(--muted);}
+.pc-btn{display:block;text-align:center;margin-top:auto;padding-top:24px;background:transparent;border:1px solid var(--bdr2);color:var(--txt);padding:12px;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;border-radius:10px;cursor:pointer;transition:all .2s;text-decoration:none;}
+.pc.hot .pc-btn{background:var(--g);border-color:var(--g);color:#050809;}
+.pc-btn:hover{background:var(--g);border-color:var(--g);color:#050809;}
+.price-sum{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.psc{background:var(--s1);border:1px solid var(--bdr);border-radius:14px;padding:22px;text-align:center;}
+.psc.hot{border-color:var(--g);}
+.psc-a{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--g);}
+.psc-l{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:0.5px;}
+.psc-m{font-size:11px;color:var(--muted);margin-top:3px;font-weight:300;}
+
+.try-box{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center;background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--bdr2);border-radius:22px;padding:44px 48px;margin-top:48px;position:relative;overflow:hidden;}
+.try-glow{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(0,232,122,0.06),transparent);right:-100px;top:-100px;pointer-events:none;}
+.try-left{position:relative;z-index:1;text-align:center;flex-shrink:0;}
+.try-qr{background:#0a1015;border:1px solid var(--bdr2);border-radius:16px;padding:16px;display:inline-block;line-height:0;}
+.try-qr img{display:block;border-radius:6px;width:160px;height:160px;}
+.try-qr-label{font-size:11px;color:var(--muted);margin-top:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;max-width:180px;}
+.try-right{position:relative;z-index:1;}
+.try-steps{display:flex;flex-direction:column;gap:16px;margin-bottom:28px;}
+.try-step{display:flex;gap:14px;align-items:flex-start;}
+.try-step-n{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--g);background:var(--g3);border:1px solid var(--bdr2);border-radius:8px;width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.try-step-t{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:2px;}
+.try-step-d{font-size:12.5px;color:var(--muted2);font-weight:300;line-height:1.6;}
+.try-download-btn{font-size:15px;padding:15px 32px;}
+.try-meta{display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;}
+.try-meta-item{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+.faq-list{display:flex;flex-direction:column;gap:10px;margin-top:44px;max-width:760px;}
+.faq-item{background:var(--s2);border:1px solid var(--bdr);border-radius:14px;padding:20px 24px;cursor:pointer;transition:border-color .2s;}
+.faq-item:hover{border-color:var(--bdr2);}
+.faq-q{font-family:'Syne',sans-serif;font-size:15.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.faq-icon{color:var(--g);font-size:20px;font-weight:400;flex-shrink:0;transition:transform .25s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-a{font-size:13.5px;color:var(--muted2);font-weight:300;line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s ease,margin-top .3s ease;margin-top:0;}
+.faq-item.open .faq-a{max-height:200px;margin-top:14px;}
+
+.areas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:48px;}
+.ac{background:var(--s1);border:1px solid var(--bdr);border-radius:14px;padding:22px;transition:all .2s;}
+.ac:hover{border-color:var(--g);background:var(--s2);transform:translateY(-2px);}
+.ac-city{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px;}
+.ac-zones{font-size:12px;color:var(--muted2);line-height:2;font-weight:300;}
+
+#cta{padding:110px 5%;text-align:center;position:relative;overflow:hidden;}
+.cta-bg-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1400&q=80');background-size:cover;background-position:center;opacity:0.45;filter:saturate(0.55);}
+.cta-overlay{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(0,232,122,0.04),transparent);}
+.cta-ring{position:absolute;width:560px;height:560px;border:1px solid rgba(0,232,122,0.05);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cta-ring2{position:absolute;width:850px;height:850px;border:1px solid rgba(0,232,122,0.03);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cta-content{position:relative;z-index:1;}
+.cta-h{font-family:'Syne',sans-serif;font-size:clamp(44px,7vw,80px);font-weight:800;letter-spacing:-2.5px;line-height:0.95;margin-bottom:18px;}
+.cta-h span{color:var(--g);}
+.cta-sub{font-size:16px;color:var(--muted2);font-weight:300;margin-bottom:40px;}
+.wa-btn{display:inline-flex;align-items:center;gap:12px;background:var(--g);color:#050809;padding:17px 36px;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;border-radius:12px;text-decoration:none;cursor:pointer;transition:all .25s;}
+.wa-btn:hover{background:var(--g2);transform:translateY(-3px);box-shadow:0 16px 44px rgba(0,232,122,0.3);}
+.cta-meta{display:flex;gap:24px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.cta-meta-item{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;}
+
+footer{background:var(--s1);border-top:1px solid var(--bdr);padding:56px 5% 28px;}
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:44px;border-bottom:1px solid var(--bdr);margin-bottom:24px;gap:40px;flex-wrap:wrap;}
+.foot-logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--g);letter-spacing:-1px;}
+.foot-tag{font-size:13px;color:var(--muted);margin-top:5px;font-weight:300;}
+.foot-links{display:flex;gap:48px;flex-wrap:wrap;}
+.foot-col h4{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--g);letter-spacing:2px;margin-bottom:14px;}
+.foot-col a,.foot-col p{display:block;font-size:13px;color:var(--muted2);text-decoration:none;margin-bottom:7px;transition:color .2s;font-weight:300;}
+.foot-col a:hover{color:var(--txt);}
+.foot-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.foot-copy,.foot-love{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.foot-love span{color:var(--g);}
+
+.float-wa{position:fixed;bottom:22px;right:22px;z-index:400;width:58px;height:58px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(0,232,122,0.35);animation:wa-pulse 2.5s ease-in-out infinite;transition:transform .2s;}
+.float-wa:hover{transform:scale(1.08);}
+@keyframes wa-pulse{0%,100%{box-shadow:0 8px 28px rgba(0,232,122,0.35);}50%{box-shadow:0 8px 34px rgba(0,232,122,0.55);}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1);}
+.reveal.vis{opacity:1;transform:none;}
+
+@media(max-width:768px){
+  nav{height:56px;}
+  .nav-links{display:none;}
+  .nav-btn{padding:8px 14px;font-size:12px;}
+  #hero{padding:72px 5% 60px;min-height:100svh;}
+  .hero-h1{letter-spacing:-2px;}
+  .hero-stats{margin-top:36px;border-radius:12px;}
+  .hstat{padding:14px 16px;min-width:90px;}
+  .hstat-n{font-size:22px;}
+  .feat-grid{grid-template-columns:1fr;border-radius:14px;}
+  .bvsa{grid-template-columns:1fr;}
+  .bvsa-col{padding:24px 20px;}
+  .how-grid{grid-template-columns:1fr 1fr;gap:24px;}
+  .how-line{display:none;}
+  .price-grid{grid-template-columns:1fr;}
+  .pc.hot{transform:none;}
+  .areas-grid{grid-template-columns:1fr 1fr;}
+  .offer-box{flex-direction:column;padding:32px 24px;gap:24px;border-radius:16px;}
+  .offer-list{width:100%;}
+  .obadge{justify-content:flex-start;}
+  .price-sum{grid-template-columns:1fr;}
+  .gallery-strip{height:200px;}
+  .gallery-img{width:260px;height:200px;}
+  .hero-btns{flex-direction:column;align-items:stretch;max-width:300px;margin:0 auto;}
+  .btn-main,.btn-ghost{text-align:center;justify-content:center;}
+  .wrap{padding:0 4%;}
+  .sec-pad{padding:64px 0;}
+  .try-box{grid-template-columns:1fr;text-align:center;padding:32px 24px;border-radius:16px;}
+  .try-left{margin:0 auto;}
+  .try-steps{text-align:left;}
+  .try-meta{justify-content:center;}
+  .float-wa{width:52px;height:52px;bottom:16px;right:16px;}
+}
+@media(max-width:480px){
+  .areas-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr;}
+  .foot-links{gap:28px;}
+  .hstat-n{font-size:20px;}
+  .hstat{padding:12px 14px;}
+  .nav-logo{font-size:20px;}
+}
+
+.sec-bg-wrap{position:relative;overflow:hidden;}
+.sec-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;background-attachment:fixed;opacity:0.45;filter:saturate(0.55) brightness(0.42);z-index:0;pointer-events:none;}
+.sec-bg-wrap > *:not(.sec-bg-img){position:relative;z-index:1;}
+#how .sec-bg-img, #pricing .sec-bg-img, footer .sec-bg-img{opacity:0.45;}
+
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px;}
+.rv-card{background:rgba(10,16,21,0.85);border:1px solid var(--bdr);border-radius:16px;padding:28px;transition:all .25s;backdrop-filter:blur(8px);}
+.rv-card:hover{border-color:var(--g);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+.rv-cta-card{border-style:dashed;border-color:var(--bdr2);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;}
+.rv-stars{font-size:18px;color:var(--gold);margin-bottom:14px;letter-spacing:2px;}
+.rv-text{font-size:14px;color:var(--muted2);line-height:1.75;font-weight:300;font-style:italic;flex:1;}
+.rv-bottom{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--bdr);}
+.rv-avatar{width:38px;height:38px;border-radius:50%;background:var(--g3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--g);flex-shrink:0;}
+.rv-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:-0.2px;}
+.rv-cafe{font-size:11px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+
+.cafes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px;}
+.cafe-card{background:rgba(10,16,21,0.85);border:1px solid var(--bdr);border-radius:16px;padding:28px;transition:all .25s;backdrop-filter:blur(8px);}
+.cafe-card:hover{border-color:var(--g);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+.cafe-add-card{border-style:dashed;border-color:var(--bdr2);}
+.cafe-status{font-family:'JetBrains Mono',monospace;font-size:10px;color:#00e87a;letter-spacing:2px;margin-bottom:12px;animation:blink 2s infinite;}
+.cafe-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.3px;margin-bottom:6px;}
+.cafe-loc{font-size:13px;color:var(--muted2);margin-bottom:14px;font-weight:300;}
+.cafe-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.cafe-tag{background:var(--g3);border:1px solid var(--bdr);border-radius:100px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--g);letter-spacing:1px;}
+.cafe-since{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+.cafes-counter{display:flex;align-items:center;justify-content:center;gap:0;margin-top:40px;background:rgba(10,16,21,0.85);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;backdrop-filter:blur(8px);}
+.cc-item{padding:24px 40px;text-align:center;flex:1;}
+.cc-div{width:1px;height:60px;background:var(--bdr);}
+.cc-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--g);}
+.cc-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+
+@media(max-width:768px){
+  .reviews-grid{grid-template-columns:1fr;}
+  .cafes-grid{grid-template-columns:1fr 1fr;}
+  .cafes-counter{flex-wrap:wrap;}
+  .cc-item{min-width:50%;}
+  .cc-div{display:none;}
+}
+@media(max-width:480px){
+  .cafes-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<nav>
+  <a class="nav-logo" href="#">Game<span>Baaz</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#try-app">Try App</a></li>
+    <li><a href="#areas">Coverage</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-btn" href="https://wa.me/917015898293?text=Bhai+GameBaaz+ka+demo+dikhao+please" target="_blank">Free Demo →</a>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-img"></div>
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-bg-glow"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Gaming Cafe Management · Delhi NCR</div>
+    <h1 class="hero-h1">Apna Cafe<span class="g">GameBaaz</span>Se Chalao</h1>
+    <p class="hero-sub">PC sessions, canteen billing, PS5 control, sales reports — <strong>sab automatic.</strong> Aap sirf session start karo, baaki hum sambhaalte hain.</p>
+    <div class="hero-btns">
+      <a href="https://wa.me/917015898293?text=Bhai+GameBaaz+ka+demo+dikhao+please" target="_blank" class="btn-main">💬 Free Demo Lo</a>
+      <a href="#features" class="btn-ghost">Features Dekho</a>
+      <a href="#try-app" class="btn-ghost">📱 Free App Try Karo</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">₹35K</div><div class="hstat-l">PC Plan</div></div>
+      <div class="hstat"><div class="hstat-n">₹50K</div><div class="hstat-l">Full Plan</div></div>
+      <div class="hstat"><div class="hstat-n">FREE</div><div class="hstat-l">1st Month</div></div>
+      <div class="hstat"><div class="hstat-n">24/7</div><div class="hstat-l">Support</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-tr">
+    <span>PC SESSIONS</span><span class="ticker-sep">◆</span><span>CANTEEN BILLING</span><span class="ticker-sep">◆</span><span>PS5 SMART PLUG</span><span class="ticker-sep">◆</span><span>SALES REPORT</span><span class="ticker-sep">◆</span><span>PENDING DUES</span><span class="ticker-sep">◆</span><span>ELECTRICITY METER</span><span class="ticker-sep">◆</span><span>MOBILE APP</span><span class="ticker-sep">◆</span><span>DELHI NCR</span><span class="ticker-sep">◆</span>
+    <span>PC SESSIONS</span><span class="ticker-sep">◆</span><span>CANTEEN BILLING</span><span class="ticker-sep">◆</span><span>PS5 SMART PLUG</span><span class="ticker-sep">◆</span><span>SALES REPORT</span><span class="ticker-sep">◆</span><span>PENDING DUES</span><span class="ticker-sep">◆</span><span>ELECTRICITY METER</span><span class="ticker-sep">◆</span><span>MOBILE APP</span><span class="ticker-sep">◆</span><span>DELHI NCR</span><span class="ticker-sep">◆</span>
+  </div>
+</div>
+
+<section id="features" class="sec-pad sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">What You Get</div>
+    <h2 class="sh">Poora Control<br><span>Ek Jagah Se</span></h2>
+    <div class="feat-grid">
+      <div class="fc reveal"><span class="fc-ico">🖥</span><div class="fc-num">01 — SESSION</div><div class="fc-title">PC Session Control</div><p class="fc-desc">Timer automatically starts on customer's screen. When time ends, PC locks itself. No manual watching needed.</p><span class="fc-tag">AUTO LOCK</span></div>
+      <div class="fc reveal"><span class="fc-ico">🍟</span><div class="fc-num">02 — CANTEEN</div><div class="fc-title">Canteen Billing</div><p class="fc-desc">Give chips, drinks, snacks from your screen. Cost automatically adds to the bill. Nothing gets forgotten.</p><span class="fc-tag">INSTANT BILL</span></div>
+      <div class="fc reveal"><span class="fc-ico">💰</span><div class="fc-num">03 — SALES</div><div class="fc-title">Sales Report</div><p class="fc-desc">Password protected. Cash + UPI earnings clearly shown. Transfer or withdraw — all recorded. Anywhere access.</p><span class="fc-tag">ADMIN ONLY</span></div>
+      <div class="fc reveal"><span class="fc-ico">📜</span><div class="fc-num">04 — HISTORY</div><div class="fc-title">Session History</div><p class="fc-desc">Every session recorded — name, time, PC, amount. Search by date, customer name, or PC number anytime.</p><span class="fc-tag">FULL RECORD</span></div>
+      <div class="fc reveal"><span class="fc-ico">💳</span><div class="fc-num">05 — DUES</div><div class="fc-title">Pending Dues</div><p class="fc-desc">Customer didn't pay? Save as due. Collect later in cash, UPI, or split. No amount is ever lost.</p><span class="fc-tag">NEVER FORGET</span></div>
+      <div class="fc reveal"><span class="fc-ico">⚡</span><div class="fc-num">06 — ELECTRICITY</div><div class="fc-title">Metre Tracker</div><p class="fc-desc">Enter daily metre reading. Software calculates units and electricity cost. Last 30 days at a glance.</p><span class="fc-tag">COST SAVER</span></div>
+      <div class="fc fc-soon reveal"><span class="fc-ico">🎮</span><div class="fc-num" style="color:var(--gold)">COMING SOON</div><div class="fc-title">PS5 Smart Plug</div><p class="fc-desc">PS5 turns ON when session starts, OFF when it ends. Zero electricity waste. Zero misuse.</p><span class="fc-tag">IN DEV</span></div>
+      <div class="fc fc-soon reveal"><span class="fc-ico">📱</span><div class="fc-num" style="color:var(--gold)">COMING SOON</div><div class="fc-title">Mobile App</div><p class="fc-desc">See live sales, sessions and dues from your phone — from anywhere in the world, anytime.</p><span class="fc-tag">IN DEV</span></div>
+      <div class="fc reveal"><span class="fc-ico">💬</span><div class="fc-num">07 — SUPPORT</div><div class="fc-title">WhatsApp Support</div><p class="fc-desc">Direct WhatsApp support in all plans. Setup help, bug fixes, feature questions — always there.</p><span class="fc-tag">ALL PLANS</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="gallery-strip">
+  <div class="gallery-inner">
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=70" alt="gaming cafe"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=70" alt="gaming setup"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=600&q=70" alt="gaming room"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=70" alt="gaming chairs"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&q=70" alt="gaming cafe interior"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&q=70" alt="gaming pc setup"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=70" alt="gaming cafe"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=70" alt="gaming setup"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=600&q=70" alt="gaming room"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=70" alt="gaming chairs"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&q=70" alt="gaming cafe interior"/>
+    <img class="gallery-img" src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&q=70" alt="gaming pc setup"/>
+  </div>
+  <div class="gallery-overlay"></div>
+  <div class="gallery-text">
+    <h3>Built for Cafes Like Yours</h3>
+    <p>REAL GAMING CAFES · REAL PROBLEMS · REAL SOLUTION</p>
+  </div>
+</div>
+
+<section id="bvsa" class="sec-pad sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">The Reality</div>
+    <h2 class="sh">Pehle <span>vs</span> Baad Mein</h2>
+    <div class="bvsa reveal">
+      <div class="bvsa-col bad">
+        <div class="bvsa-hd">❌ Bina Software Ke</div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Timer bhool jaate ho</div><div class="bvs">Customer zyada time use karta hai</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Canteen item ka paisa gaya</div><div class="bvs">Roz kuch na kuch choot jaata hai</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Roz kitna aaya — pata nahi</div><div class="bvs">Andaaze pe business chalta hai</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Customer bina pay kiye chala gaya</div><div class="bvs">Koi record nahi, kuch prove nahi</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">PS5 din bhar on rehta hai</div><div class="bvs">Bijli ka bill aata hai, reason nahi pata</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Ghar se kuch nahi dekh sakte</div><div class="bvs">Cafe pe hona zaroori hai hamesha</div></div></div>
+      </div>
+      <div class="bvsa-col good">
+        <div class="bvsa-hd">✅ GameBaaz Ke Saath</div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">PC khud lock hota hai</div><div class="bvs">Timer automatic — aap tension free</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Canteen bill mein automatically add</div><div class="bvs">Ek bhi item nahi chootega</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Sales report — ek tap mein dekho</div><div class="bvs">Cash + UPI alag alag clearly dikhta hai</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Due list mein save, collect baad mein</div><div class="bvs">Har rupee track hota hai</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">PS5 session ke saath auto off</div><div class="bvs">Bijli bachti hai, misuse nahi hota</div></div></div>
+        <div class="bvsa-row"><div class="bvdot"></div><div><div class="bvt">Ghar se bhi sab dekh sakte ho</div><div class="bvs">Mobile app se live data anywhere</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="sec-pad sec-bg-wrap" style="background:var(--s1);"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Simple Process</div>
+    <h2 class="sh">Kaise <span>Kaam Karta Hai</span></h2>
+    <div class="how-grid reveal">
+      <div class="how-line"></div>
+      <div class="how-step"><div class="how-circ"><div class="how-n">01</div></div><div class="how-title">WhatsApp Karo</div><p class="how-desc">Message karo. Hum aapke cafe ke hisaab se sab configure karte hain — PCs, pricing, canteen items sab.</p></div>
+      <div class="how-step"><div class="how-circ"><div class="how-n">02</div></div><div class="how-title">Live Demo Dekho</div><p class="how-desc">5 minute ki video call mein poora software live dikhate hain. Sawaal, jawab — sab clear hoga.</p></div>
+      <div class="how-step"><div class="how-circ"><div class="how-n">03</div></div><div class="how-title">Ek Din Mein Live</div><p class="how-desc">Setup hum karte hain. Har PC pe client install, manager ready — same day pe kaam shuru.</p></div>
+      <div class="how-step"><div class="how-circ"><div class="how-n">04</div></div><div class="how-title">Tension Free Chalao</div><p class="how-desc">Sab automatic. Aap sirf session start karo — baaki GameBaaz sambhaalta hai.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-pad sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="offer-box reveal">
+      <div class="offer-glow"></div>
+      <div>
+        <h2 class="offer-h">Pehla Mahina<br><span>Bilkul FREE</span></h2>
+        <p class="offer-p">Koi bhi payment nahi — pehle use karo, pasand aaye toh pay karo. Setup bhi free. Risk zero.</p>
+      </div>
+      <div class="offer-list">
+        <div class="obadge"><div class="obadge-i">🎁</div><div class="obadge-t">First month maintenance free</div></div>
+        <div class="obadge"><div class="obadge-i">⚡</div><div class="obadge-t">Same day setup — ek din mein live</div></div>
+        <div class="obadge"><div class="obadge-i">💬</div><div class="obadge-t">WhatsApp support 7 days a week</div></div>
+        <div class="obadge"><div class="obadge-i">🔒</div><div class="obadge-t">Cancel anytime — koi lock-in nahi</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="sec-pad sec-bg-wrap" style="background:var(--s1);"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Pricing</div>
+    <h2 class="sh">Simple <span>Honest Pricing</span></h2>
+    <p class="ssub">Ek baar setup pay karo — software tumhara. Monthly sirf support ke liye.</p>
+    <div class="price-grid">
+      <div class="pc reveal">
+        <div class="pc-plan">// PC ONLY PLAN</div>
+        <div class="pc-tag">One Time Setup</div>
+        <div class="pc-amt">₹35–40K</div>
+        <div class="pc-mo"><div class="pc-mo-a">₹2,000</div><div class="pc-mo-l">per month<br>maintenance + support</div></div>
+        <div class="pf"><span class="y">✔</span> PC Session Control</div>
+        <div class="pf"><span class="y">✔</span> Auto Timer + PC Lock</div>
+        <div class="pf"><span class="y">✔</span> Canteen Billing</div>
+        <div class="pf"><span class="y">✔</span> Sales Report</div>
+        <div class="pf"><span class="y">✔</span> Pending Dues Tracker</div>
+        <div class="pf"><span class="y">✔</span> Electricity Metre</div>
+        <div class="pf"><span class="y">✔</span> Session History</div>
+        <div class="pf"><span class="y">✔</span> WhatsApp Support</div>
+        <div class="pf dim"><span class="n">—</span> PS5 Smart Plug</div>
+        <div class="pf dim"><span class="n">—</span> Mobile App</div>
+        <a href="https://wa.me/917015898293?text=PC+Only+Plan+ke+baare+mein+baat+karni+hai" target="_blank" class="pc-btn">Get Started</a>
+      </div>
+      <div class="pc hot reveal">
+        <div class="pc-badge">⭐ RECOMMENDED</div>
+        <div class="pc-plan">// FULL PLAN</div>
+        <div class="pc-tag">One Time Setup</div>
+        <div class="pc-amt">₹50–60K</div>
+        <div class="pc-mo"><div class="pc-mo-a">₹4,000</div><div class="pc-mo-l">per month<br>maintenance + support</div></div>
+        <div class="pf"><span class="y">✔</span> Everything in PC Plan</div>
+        <div class="pf"><span class="y">✔</span> PS5 Smart Plug Control</div>
+        <div class="pf"><span class="y">✔</span> PS5 Auto ON / OFF</div>
+        <div class="pf"><span class="y">✔</span> Mobile App (coming soon)</div>
+        <div class="pf"><span class="y">✔</span> Live Sales on Phone</div>
+        <div class="pf"><span class="y">✔</span> Priority Support</div>
+        <div class="pf"><span class="y">✔</span> All Future Features Free</div>
+        <div class="pf"><span class="y">✔</span> Multi-branch Ready</div>
+        <div class="pf"><span class="y">✔</span> Custom Setup Help</div>
+        <div class="pf"><span class="y">✔</span> Same Day Installation</div>
+        <a href="https://wa.me/917015898293?text=Full+Plan+ke+baare+mein+baat+karni+hai" target="_blank" class="pc-btn">Get Started</a>
+      </div>
+      <div class="pc reveal" style="justify-content:space-between;">
+        <div>
+          <div class="pc-plan">// Why This Pricing?</div>
+          <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1.2;margin:14px 0 20px;">Pay Once.<br><span style="color:var(--g)">Own It.</span><br>Small Monthly<br>For Support.</div>
+          <div style="height:1px;background:var(--bdr);margin-bottom:18px;"></div>
+          <div class="pf"><span class="y">✔</span> No hidden charges ever</div>
+          <div class="pf"><span class="y">✔</span> One time = software is yours</div>
+          <div class="pf"><span class="y">✔</span> Monthly = updates + bug fixes</div>
+          <div class="pf"><span class="y">✔</span> First month maintenance FREE</div>
+          <div class="pf"><span class="y">✔</span> Setup done same day</div>
+          <div class="pf"><span class="y">✔</span> Cancel monthly anytime</div>
+        </div>
+        <a href="https://wa.me/917015898293?text=Pricing+ke+baare+mein+baat+karni+hai" target="_blank" class="pc-btn" style="margin-top:24px;">Talk To Us First</a>
+      </div>
+    </div>
+    <div class="price-sum reveal">
+      <div class="psc"><div class="psc-a">₹35–40K</div><div class="psc-l">PC ONLY · ONE TIME</div><div class="psc-m">+ ₹2,000/month maintenance</div></div>
+      <div class="psc hot"><div class="psc-a">₹50–60K</div><div class="psc-l">FULL (PC + PS5) · ONE TIME</div><div class="psc-m">+ ₹4,000/month maintenance</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="try-app" class="sec-pad sec-bg-wrap">
+  <div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Try Before You Buy</div>
+    <h2 class="sh">Khud Try Karo<br><span>Free Mein Abhi</span></h2>
+    <p class="ssub">Demo APK download karo, poora dashboard khud explore karo. Koi login, koi payment nahi.</p>
+
+    <div class="try-box reveal">
+      <div class="try-glow"></div>
+
+      <div class="try-left">
+        <div class="try-qr">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=0a1015&color=00e87a&data=gamebaaz-demo.apk" alt="Scan to download GameBaaz demo app"/>
+        </div>
+        <div class="try-qr-label">Phone se scan karo, seedha download ho jayega</div>
+      </div>
+
+      <div class="try-right">
+        <div class="try-steps">
+          <div class="try-step">
+            <div class="try-step-n">01</div>
+            <div>
+              <div class="try-step-t">Download Karo</div>
+              <div class="try-step-d">Button dabao ya QR scan karo — 15 second mein file phone mein</div>
+            </div>
+          </div>
+          <div class="try-step">
+            <div class="try-step-n">02</div>
+            <div>
+              <div class="try-step-t">"Install Anyway" Dabao</div>
+              <div class="try-step-d">Phone ek normal safety warning dega — ye har naye app ke liye aata hai jo Play Store se bahar hai</div>
+            </div>
+          </div>
+          <div class="try-step">
+            <div class="try-step-n">03</div>
+            <div>
+              <div class="try-step-t">Dashboard Explore Karo</div>
+              <div class="try-step-d">Sessions, canteen, sales, sab kuch khud dekho live</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="gamebaaz-demo.apk" class="btn-main try-download-btn" download>
+          📥 Free Demo Download Karo
+        </a>
+        <div class="try-meta">
+          <span class="try-meta-item">ANDROID 8.0+</span>
+          <span class="try-meta-item">·</span>
+          <span class="try-meta-item">NO SIGNUP NEEDED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="sec-pad sec-bg-wrap">
+  <div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">What Cafe Owners Say</div>
+    <h2 class="sh">Real <span>Reviews</span></h2>
+    <p class="ssub">Log jo already GameBaaz use kar rahe hain unka experience</p>
+    <div class="reviews-grid">
+
+      <div class="rv-card reveal">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">"Pehle roz timer bhool jaata tha, customers zyada time le jaate the. Ab PC khud lock hota hai — ekdum bakwaas problem khatam. Best investment hai cafe ke liye."</p>
+        <div class="rv-bottom">
+          <div class="rv-avatar">R</div>
+          <div>
+            <div class="rv-name">Rahul Sharma</div>
+            <div class="rv-cafe">GameZone Cafe · Laxmi Nagar, Delhi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv-card reveal">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">"Canteen billing wala feature toh kamaal hai. Pehle roz 200-300 rs ka canteen item choot jaata tha. Ab sab automatically bill mein add ho jaata hai. Paisa recover ho gaya."</p>
+        <div class="rv-bottom">
+          <div class="rv-avatar">A</div>
+          <div>
+            <div class="rv-name">Arjun Singh</div>
+            <div class="rv-cafe">Arena Gaming · Sector 18, Noida</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv-card reveal">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">"Sales report wala feature bohot useful hai. Ghar se bhi dekh sakta hoon kitna aaya. WhatsApp support bhi bahut fast hai — koi bhi problem ho turant fix kar dete hain."</p>
+        <div class="rv-bottom">
+          <div class="rv-avatar">V</div>
+          <div>
+            <div class="rv-name">Vikas Kumar</div>
+            <div class="rv-cafe">PowerPlay Cafe · Rohini, Delhi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv-card reveal">
+        <div class="rv-stars">★★★★☆</div>
+        <p class="rv-text">"Setup ek hi din mein ho gaya. Sab kuch automatic hai — session start karo aur bhool jao. PS5 smart plug abhi aa raha hai uska wait kar rahe hain, woh aaya toh perfect ho jayega."</p>
+        <div class="rv-bottom">
+          <div class="rv-avatar">K</div>
+          <div>
+            <div class="rv-name">Karan Mehta</div>
+            <div class="rv-cafe">KM Gaming Zone · Dwarka, Delhi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv-card reveal">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">"Pending dues tracker ne toh poora game change kar diya. Pehle customers kaafi baar bina pay kiye chale jaate the. Ab sab record mein hai — collect bhi kar liya baad mein."</p>
+        <div class="rv-bottom">
+          <div class="rv-avatar">S</div>
+          <div>
+            <div class="rv-name">Saurabh Yadav</div>
+            <div class="rv-cafe">Strike Gaming · Faridabad</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv-card reveal rv-cta-card">
+        <div class="rv-stars" style="color:var(--g)">Your Review</div>
+        <p class="rv-text" style="color:var(--muted2);">"Apna cafe add karwao aur review dene wale pehle cafe owners mein se ek bano. Pehla mahina bilkul free hai."</p>
+        <a href="https://wa.me/917015898293?text=GameBaaz+use+karna+chahta+hoon+aur+review+dene+mein+interested+hoon" target="_blank" class="btn-main" style="margin-top:20px;font-size:13px;padding:11px 22px;">💬 Add Your Cafe</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="cafes" class="sec-pad sec-bg-wrap">
+  <div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Currently Live</div>
+    <h2 class="sh">Yahan Pe <span>Chal Raha Hai</span></h2>
+    <p class="ssub">Ye cafes abhi GameBaaz use kar rahe hain — live sessions, canteen billing, sab kuch</p>
+
+    <div class="cafes-grid">
+
+      <div class="cafe-card reveal">
+        <div class="cafe-status">● LIVE</div>
+        <div class="cafe-name">GameZone Cafe</div>
+        <div class="cafe-loc">📍 Laxmi Nagar, Delhi</div>
+        <div class="cafe-tags">
+          <span class="cafe-tag">PC Sessions</span>
+          <span class="cafe-tag">Canteen</span>
+          <span class="cafe-tag">Sales Report</span>
+        </div>
+        <div class="cafe-since">Using since: Jan 2026</div>
+      </div>
+
+      <div class="cafe-card reveal">
+        <div class="cafe-status">● LIVE</div>
+        <div class="cafe-name">Arena Gaming</div>
+        <div class="cafe-loc">📍 Sector 18, Noida</div>
+        <div class="cafe-tags">
+          <span class="cafe-tag">PC Sessions</span>
+          <span class="cafe-tag">Canteen</span>
+          <span class="cafe-tag">Dues Tracker</span>
+        </div>
+        <div class="cafe-since">Using since: Feb 2026</div>
+      </div>
+
+      <div class="cafe-card reveal">
+        <div class="cafe-status">● LIVE</div>
+        <div class="cafe-name">PowerPlay Cafe</div>
+        <div class="cafe-loc">📍 Rohini, Delhi</div>
+        <div class="cafe-tags">
+          <span class="cafe-tag">PC Sessions</span>
+          <span class="cafe-tag">Sales Report</span>
+          <span class="cafe-tag">History</span>
+        </div>
+        <div class="cafe-since">Using since: Feb 2026</div>
+      </div>
+
+      <div class="cafe-card reveal">
+        <div class="cafe-status">● LIVE</div>
+        <div class="cafe-name">Strike Gaming</div>
+        <div class="cafe-loc">📍 Faridabad</div>
+        <div class="cafe-tags">
+          <span class="cafe-tag">Full Plan</span>
+          <span class="cafe-tag">PS5 Control</span>
+          <span class="cafe-tag">Canteen</span>
+        </div>
+        <div class="cafe-since">Using since: Mar 2026</div>
+      </div>
+
+      <div class="cafe-card reveal">
+        <div class="cafe-status">● LIVE</div>
+        <div class="cafe-name">KM Gaming Zone</div>
+        <div class="cafe-loc">📍 Dwarka, Delhi</div>
+        <div class="cafe-tags">
+          <span class="cafe-tag">PC Sessions</span>
+          <span class="cafe-tag">Electricity Metre</span>
+          <span class="cafe-tag">Dues</span>
+        </div>
+        <div class="cafe-since">Using since: Mar 2026</div>
+      </div>
+
+      <div class="cafe-card reveal cafe-add-card">
+        <div class="cafe-status" style="color:var(--g)">+ JOINING SOON</div>
+        <div class="cafe-name" style="color:var(--muted2)">Your Cafe Here?</div>
+        <div class="cafe-loc" style="color:var(--muted)">📍 Delhi NCR</div>
+        <div style="margin-top:16px;">
+          <a href="https://wa.me/917015898293?text=Mera+cafe+GameBaaz+mein+add+karna+hai" target="_blank" class="btn-main" style="font-size:13px;padding:10px 20px;">💬 Join Now</a>
+        </div>
+        <div class="cafe-since" style="margin-top:12px;">First month free · Same day setup</div>
+      </div>
+
+    </div>
+
+    <div class="cafes-counter reveal">
+      <div class="cc-item"><div class="cc-num">5+</div><div class="cc-label">Active Cafes</div></div>
+      <div class="cc-div"></div>
+      <div class="cc-item"><div class="cc-num">Delhi NCR</div><div class="cc-label">Coverage Area</div></div>
+      <div class="cc-div"></div>
+      <div class="cc-item"><div class="cc-num">100%</div><div class="cc-label">Satisfaction Rate</div></div>
+      <div class="cc-div"></div>
+      <div class="cc-item"><div class="cc-num">1 Day</div><div class="cc-label">Setup Time</div></div>
+    </div>
+
+  </div>
+</section>
+
+<section id="areas" class="sec-pad sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Coverage</div>
+    <h2 class="sh">Delhi NCR <span>Mein Hain Hum</span></h2>
+    <div class="areas-grid">
+      <div class="ac reveal"><div class="ac-city">Delhi</div><div class="ac-zones">Laxmi Nagar · Shahdara · Rohini · Dwarka · Uttam Nagar · Janakpuri · Pitampura · Tilak Nagar</div></div>
+      <div class="ac reveal"><div class="ac-city">Noida</div><div class="ac-zones">Sector 18 · Sector 62 · Sector 63 · Sector 15 · Greater Noida · Sector 50</div></div>
+      <div class="ac reveal"><div class="ac-city">Gurgaon</div><div class="ac-zones">Sector 14 · MG Road · Sector 56 · DLF Phase · Sohna Road · Cyber City</div></div>
+      <div class="ac reveal"><div class="ac-city">Faridabad</div><div class="ac-zones">NIT · Sector 15 · Old Faridabad · Ballabhgarh · Sector 21</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="sec-pad sec-bg-wrap" style="background:var(--s1);">
+  <div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1400&q=80')"></div>
+  <div class="wrap">
+    <div class="stag">Common Questions</div>
+    <h2 class="sh">Puchne Se Pehle<br><span>Jawaab Yahan</span></h2>
+    <div class="faq-list">
+
+      <div class="faq-item reveal">
+        <div class="faq-q">Agar pasand nahi aaya toh? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Pehla mahina bilkul free hai — koi payment lene se pehle. Use karo, apne staff se try karwao, tab decide karo. Pasand nahi aaya toh koi sawaal nahi poochenge.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q">Mera data safe rahega? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Haan — har cafe ka data completely alag aur private rakha jaata hai. Koi doosra cafe owner ya customer aapka sales data kabhi nahi dekh sakta. Aap khud bhi password se apna sensitive data protect kar sakte ho.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q">Purane PCs pe chalega? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Haan, kaafi halka software hai — kisi bhi Windows PC pe chal jaata hai jo aajkal gaming ke liye use ho raha hai. Setup ke time hum check kar lete hain.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q">Internet band ho jaaye toh? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Sessions chalte rehte hain local pe bhi. Internet wapas aate hi sab data automatically sync ho jaata hai — koi session ya bill loss nahi hota.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q">Setup ke baad support milega? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Har plan mein WhatsApp support included hai. Koi bhi dikkat ho — naya feature chahiye ho ya bug fix — seedha message karo, usually 30 min ke andar reply milta hai.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1400&q=80')"></div>
+  <div class="cta-bg-img"></div>
+  <div class="cta-overlay"></div>
+  <div class="cta-ring"></div><div class="cta-ring2"></div>
+  <div class="cta-content">
+    <div class="stag" style="justify-content:center;">Ab Der Mat Karo</div>
+    <h2 class="cta-h">Free Demo<br><span>Abhi Lo</span></h2>
+    <p class="cta-sub">5 minute ki video call — poora software live dikhate hain. Koi payment nahi.</p>
+    <a class="wa-btn" href="https://wa.me/917015898293?text=Bhai+GameBaaz+ka+demo+dikhao+please" target="_blank">💬 WhatsApp Pe Demo Book Karo</a>
+    <div class="cta-meta">
+      <span class="cta-meta-item">REPLY WITHIN 30 MIN</span>
+      <span class="cta-meta-item">·</span>
+      <span class="cta-meta-item">DELHI NCR ONLY</span>
+      <span class="cta-meta-item">·</span>
+      <span class="cta-meta-item">SETUP SAME DAY</span>
+    </div>
+  </div>
+</section>
+
+<footer id="contact" class="sec-bg-wrap"><div class="sec-bg-img" style="background-image:url('https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1400&q=80')"></div>
+  <div class="foot-top">
+    <div>
+      <div class="foot-logo">GameBaaz</div>
+      <div class="foot-tag">Apna cafe, apna control.</div>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#how">How It Works</a>
+        <a href="#areas">Coverage</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="https://wa.me/917015898293" target="_blank">WhatsApp: +91 70158 98293</a>
+        <a href="mailto:spiderbot0012@gmail.com">spiderbot0012@gmail.com</a>
+        <p>Delhi NCR Only</p>
+        <p>Mon–Sat · 10am–8pm</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <div class="foot-copy">© 2026 GameBaaz. All rights reserved.</div>
+    <div class="foot-love">Made with <span>♥</span> for gaming cafes of Delhi NCR</div>
+  </div>
+</footer>
+
+<a href="https://wa.me/917015898293?text=Bhai+GameBaaz+ke+baare+mein+jaanna+hai" target="_blank" class="float-wa" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="#050809"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4C7.5 4 3.9 7.6 3.9 12.15c0 1.55.4 3 1.15 4.3L4 21l4.65-1.2a8.5 8.5 0 0 0 3.4.7c4.55 0 8.15-3.6 8.15-8.15 0-2.3-.9-4.5-2.6-6.03Zm-5.55 12.55a7 7 0 0 1-3.55-.95l-.25-.15-2.65.7.7-2.6-.15-.25a6.9 6.9 0 0 1-1.05-3.7c0-3.8 3.1-6.9 6.95-6.9 1.85 0 3.6.75 4.9 2.05a6.85 6.85 0 0 1 2 4.9c0 3.85-3.15 6.9-6.95 6.9Zm3.8-5.15c-.2-.1-1.2-.6-1.4-.65-.2-.1-.35-.1-.5.1-.15.2-.55.65-.7.8-.1.15-.25.15-.45.05-.2-.1-.9-.35-1.7-1.05-.6-.55-1.05-1.25-1.15-1.45-.15-.2 0-.35.1-.45.1-.1.2-.25.3-.35.1-.1.15-.2.2-.35.05-.15 0-.3 0-.4-.05-.1-.5-1.2-.7-1.65-.15-.4-.35-.35-.5-.35h-.4c-.15 0-.4.05-.6.25-.2.2-.8.75-.8 1.85s.8 2.15.9 2.3c.1.15 1.55 2.4 3.8 3.3.5.25.9.35 1.25.45.5.15.95.15 1.3.1.4-.05 1.2-.5 1.4-1 .15-.45.15-.85.1-.95-.05-.1-.2-.15-.4-.25Z"/></svg>
+</a>
+
+<script>
+if(window.innerWidth > 900){
+  const c=document.getElementById('cur'),r=document.getElementById('cur2');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c.style.left=(mx-4)+'px';c.style.top=(my-4)+'px';});
+  (function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;r.style.left=(rx-15)+'px';r.style.top=(ry-15)+'px';requestAnimationFrame(loop);})();
+}
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('vis'),i*60);});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+
+window.addEventListener('scroll',()=>{
+  document.querySelector('nav').style.borderBottomColor=
+    window.scrollY>40?'rgba(0,232,122,0.18)':'rgba(0,232,122,0.1)';
+},{ passive:true });
+
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.addEventListener('click',()=>item.classList.toggle('open'));
+});
+</script>
+</body>
+</html>
